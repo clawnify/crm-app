@@ -4,7 +4,7 @@ import { Toolbar } from "./toolbar";
 import { AddForm } from "./add-form";
 import { ContactsTable } from "./contacts-table";
 import { CompaniesTable } from "./companies-table";
-import { DealsTable } from "./deals-table";
+import { DealsBoard } from "./deals-board";
 import { Pagination } from "./pagination";
 
 export function DataTable() {
@@ -12,20 +12,24 @@ export function DataTable() {
     view, loading,
     contactsPag, setContactsPage,
     companiesPag, setCompaniesPage,
-    dealsPag, setDealsPage,
   } = useCrm();
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const pag = view === "contacts" ? contactsPag
-    : view === "companies" ? companiesPag
-    : dealsPag;
-
-  const onPage = view === "contacts" ? setContactsPage
-    : view === "companies" ? setCompaniesPage
-    : setDealsPage;
+  const isTable = view === "contacts" || view === "companies";
+  const pag = view === "contacts" ? contactsPag : companiesPag;
+  const onPage = view === "contacts" ? setContactsPage : setCompaniesPage;
 
   if (loading) {
     return <div class="loading-text">Loading...</div>;
+  }
+
+  if (view === "deals") {
+    return (
+      <>
+        <Toolbar onAdd={null} />
+        <DealsBoard />
+      </>
+    );
   }
 
   return (
@@ -36,7 +40,6 @@ export function DataTable() {
         <div class="table-wrap">
           {view === "contacts" && <ContactsTable />}
           {view === "companies" && <CompaniesTable />}
-          {view === "deals" && <DealsTable />}
         </div>
         <Pagination pag={pag} onPage={onPage} />
       </div>

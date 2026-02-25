@@ -283,6 +283,23 @@ app.delete("/api/contacts/:id", (c) => {
 
 // ── Deals ────────────────────────────────────────────────────────────
 
+app.get("/api/deals/board", (c) => {
+  try {
+    const rows = query(
+      `SELECT d.*,
+              ct.first_name as contact_first_name, ct.last_name as contact_last_name,
+              co.name as company_name, co.domain as company_domain
+       FROM deals d
+       LEFT JOIN contacts ct ON d.contact_id = ct.id
+       LEFT JOIN companies co ON ct.company_id = co.id
+       ORDER BY d.created_at ASC`,
+    );
+    return c.json({ deals: rows });
+  } catch (err: unknown) {
+    return c.json({ error: (err as Error).message }, 500);
+  }
+});
+
 app.get("/api/deals", (c) => {
   try {
     const page = Math.max(1, parseInt(c.req.query("page") || "1", 10));

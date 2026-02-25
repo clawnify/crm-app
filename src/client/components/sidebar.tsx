@@ -2,6 +2,12 @@ import { Users, Building2, DollarSign } from "lucide-preact";
 import { useCrm } from "../context";
 import type { View } from "../types";
 
+const ENTITY_COLORS: Record<View, string> = {
+  contacts: "#16a34a",
+  companies: "#2563eb",
+  deals: "#ea580c",
+};
+
 const NAV_ITEMS: { view: View; label: string; icon: typeof Users }[] = [
   { view: "contacts", label: "Contacts", icon: Users },
   { view: "companies", label: "Companies", icon: Building2 },
@@ -31,11 +37,12 @@ export function Sidebar() {
           <button
             key={item.view}
             class={`sidebar-item ${view === item.view ? "active" : ""}`}
-            data-entity={item.view}
             onClick={() => setView(item.view)}
             aria-label={`View ${item.label}`}
           >
-            <item.icon size={16} />
+            <span class="sidebar-entity-icon" style={{ background: ENTITY_COLORS[item.view] }}>
+              <item.icon size={12} />
+            </span>
             {item.label}
             <span class="sidebar-badge">{counts[item.view]}</span>
           </button>

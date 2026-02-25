@@ -38,6 +38,7 @@ export interface CrmContextValue {
   addDeal: (data: Partial<Deal>) => Promise<void>;
   updateDeal: (id: number, data: Partial<Deal>) => Promise<void>;
   deleteDeal: (id: number) => Promise<void>;
+  boardDeals: Deal[];
 
   // Lookups
   companyLookup: CompanyLookup[];

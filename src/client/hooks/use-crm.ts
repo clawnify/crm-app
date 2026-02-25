@@ -28,6 +28,7 @@ export function useCrmState(isAgent: boolean): CrmContextValue {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [dealsPag, setDealsPag] = useState<PaginatedState>(defaultPag("id"));
   const [dealsTotalValue, setDealsTotalValue] = useState(0);
+  const [boardDeals, setBoardDeals] = useState<Deal[]>([]);
 
   // Lookups
   const [companyLookup, setCompanyLookup] = useState<CompanyLookup[]>([]);
@@ -83,6 +84,11 @@ export function useCrmState(isAgent: boolean): CrmContextValue {
     setDealsTotalValue(data.totalValue);
   }, []);
 
+  const fetchBoardDeals = useCallback(async () => {
+    const data = await api<{ deals: Deal[] }>("GET", "/api/deals/board");
+    setBoardDeals(data.deals);
+  }, []);
+
   const fetchLookups = useCallback(async () => {
     const [co, ct] = await Promise.all([
       api<{ companies: CompanyLookup[] }>("GET", "/api/companies/all"),
@@ -103,6 +109,7 @@ export function useCrmState(isAgent: boolean): CrmContextValue {
           fetchContacts(contactsPag),
           fetchCompanies(companiesPag),
           fetchDeals(dealsPag),
+          fetchBoardDeals(),
           fetchLookups(),
         ]);
       } catch (err) {
@@ -227,21 +234,18 @@ export function useCrmState(isAgent: boolean): CrmContextValue {
 
   const addDeal = useCallback(async (data: Partial<Deal>) => {
     await api("POST", "/api/deals", data);
-    await fetchDeals(dealsPag);
-    await fetchStats();
-  }, [dealsPag, fetchDeals, fetchStats]);
+    await Promise.all([fetchDeals(dealsPag), fetchBoardDeals(), fetchStats()]);
+  }, [dealsPag, fetchDeals, fetchBoardDeals, fetchStats]);
 
   const updateDeal = useCallback(async (id: number, data: Partial<Deal>) => {
     await api("PUT", `/api/deals/${id}`, data);
-    await fetchDeals(dealsPag);
-    await fetchStats();
-  }, [dealsPag, fetchDeals, fetchStats]);
+    await Promise.all([fetchDeals(dealsPag), fetchBoardDeals(), fetchStats()]);
+  }, [dealsPag, fetchDeals, fetchBoardDeals, fetchStats]);
 
   const deleteDeal = useCallback(async (id: number) => {
     await api("DELETE", `/api/deals/${id}`);
-    await fetchDeals(dealsPag);
-    await fetchStats();
-  }, [dealsPag, fetchDeals, fetchStats]);
+    await Promise.all([fetchDeals(dealsPag), fetchBoardDeals(), fetchStats()]);
+  }, [dealsPag, fetchDeals, fetchBoardDeals, fetchStats]);
 
   return {
     view, setView, isAgent, stats,
@@ -250,7 +254,7 @@ export function useCrmState(isAgent: boolean): CrmContextValue {
     companies, companiesPag, setCompaniesPage, setCompaniesSort, setCompaniesSearch,
     addCompany, updateCompany, deleteCompany,
     deals, dealsPag, dealsTotalValue, setDealsPage, setDealsSort, setDealsSearch,
-    addDeal, updateDeal, deleteDeal,
+    addDeal, updateDeal, deleteDeal, boardDeals,
     companyLookup, contactLookup,
     loading, error, setError,
   };
