@@ -31,6 +31,7 @@ export function Sidebar() {
           <button
             key={item.view}
             class={`sidebar-item ${view === item.view ? "active" : ""}`}
+            data-entity={item.view}
             onClick={() => setView(item.view)}
             aria-label={`View ${item.label}`}
           >

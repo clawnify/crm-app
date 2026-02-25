@@ -6,9 +6,9 @@
   --text: #111827;
   --text-secondary: #6b7280;
   --text-muted: #9ca3af;
-  --primary: #18181b;
-  --primary-hover: #27272a;
-  --primary-light: rgba(24, 24, 27, 0.04);
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: rgba(37, 99, 235, 0.06);
   --danger: #dc2626;
   --danger-hover: #b91c1c;
   --row-hover: #f9fafb;
@@ -73,7 +73,7 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: #18181b;
+  background: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -116,7 +116,13 @@ body {
   background: var(--primary-light);
   color: var(--primary);
 }
-.sidebar-item svg { flex-shrink: 0; }
+.sidebar-item svg { flex-shrink: 0; color: var(--text-muted); }
+.sidebar-item:hover svg { color: var(--text-secondary); }
+
+/* Attio-style colored entity icons */
+.sidebar-item[data-entity="contacts"] svg { color: #16a34a; }
+.sidebar-item[data-entity="companies"] svg { color: #2563eb; }
+.sidebar-item[data-entity="deals"] svg { color: #ea580c; }
 
 .sidebar-badge {
   margin-left: auto;
@@ -128,8 +134,8 @@ body {
   border-radius: 10px;
 }
 .sidebar-item.active .sidebar-badge {
-  color: var(--text);
-  background: rgba(24, 24, 27, 0.06);
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.08);
 }
 
 /* ── Toolbar ─────────────────────────────────────────────────────────── */
@@ -180,7 +186,7 @@ body {
 .search-input::placeholder { color: var(--text-muted); }
 .search-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.06);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* ── Card / Table ────────────────────────────────────────────────────── */
@@ -212,7 +218,7 @@ th {
   user-select: none;
 }
 th.sortable { cursor: pointer; }
-th.sortable:hover { color: var(--text); }
+th.sortable:hover { color: var(--primary); }
 th .sort-icon { margin-left: 4px; font-size: 10px; }
 th.align-right { text-align: right; }
 
@@ -337,11 +343,11 @@ tr:hover td {
 /* ── Links ───────────────────────────────────────────────────────────── */
 
 a.cell-link {
-  color: var(--text-secondary);
+  color: var(--primary);
   text-decoration: none;
   font-size: 13px;
 }
-a.cell-link:hover { color: var(--text); text-decoration: underline; }
+a.cell-link:hover { color: var(--primary-hover); text-decoration: underline; }
 
 .muted { color: var(--text-muted); }
 
@@ -441,7 +447,7 @@ tr:hover .actions-cell { opacity: 1; }
 .add-form-grid input:focus,
 .add-form-grid select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.06);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .add-form-actions {
@@ -488,7 +494,7 @@ tr:hover .actions-cell { opacity: 1; }
 .edit-form-grid input:focus,
 .edit-form-grid select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.06);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .edit-form-actions {
