@@ -8,7 +8,7 @@ Built with **Preact + Hono + SQLite**. Ships with a dual-mode UI: one for humans
 
 Clawnify CRM App is a production-ready contact relationship manager designed for the OpenClaw community. Think of it as an open-source HubSpot alternative — a CRM you can self-host, customize, and embed in any SaaS product.
 
-Unlike HubSpot or Salesforce, this runs entirely on your own infrastructure with no API keys, no vendor lock-in, and no per-seat pricing. Manage contacts, companies, and deals with rich column types, inline editing, and full CRUD — all out of the box.
+Unlike HubSpot or Salesforce, this runs entirely on your own infrastructure with no API keys, no vendor lock-in, and no per-seat pricing. It provides a complete sales pipeline and lead management system. Manage contacts, companies, and deals with rich column types, inline editing, and full CRUD — all out of the box.
 
 ## Features
 
@@ -94,6 +94,25 @@ src/
 ### Data Model
 
 Three entities with foreign key relationships:
+
+```
+┌──────────────┐       ┌──────────────┐       ┌──────────────┐
+│  companies   │       │   contacts   │       │    deals     │
+├──────────────┤       ├──────────────┤       ├──────────────┤
+│ id           │◄──┐   │ id           │◄──┐   │ id           │
+│ name         │   │   │ first_name   │   │   │ name         │
+│ domain       │   │   │ last_name    │   │   │ contact_id ──┼───┘
+│ industry     │   │   │ email        │   │   │ value        │
+│ phone        │   └───┼─ company_id  │   │   │ stage        │
+│ email        │       │ phone        │   │   │ close_date   │
+│ notes        │       │ title        │   │   │ notes        │
+│ created_at   │       │ status       │   │   │ created_at   │
+│ updated_at   │       │ created_at   │   │   │ updated_at   │
+└──────────────┘       │ updated_at   │   │   └──────────────┘
+                       └──────────────┘   │
+                                          │
+                    ON DELETE SET NULL ────┘
+```
 
 ```sql
 companies (id, name, domain, industry, phone, email, notes)
