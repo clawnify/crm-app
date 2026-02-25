@@ -1,17 +1,17 @@
 :root {
-  --bg: #f8fafc;
+  --bg: #f9fafb;
   --card-bg: #ffffff;
-  --border: #e2e8f0;
-  --border-subtle: #f1f5f9;
-  --text: #0f172a;
-  --text-secondary: #64748b;
-  --text-muted: #94a3b8;
-  --primary: #0d9488;
-  --primary-hover: #0f766e;
-  --primary-light: rgba(13, 148, 136, 0.08);
+  --border: #e5e7eb;
+  --border-subtle: #f3f4f6;
+  --text: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --primary: #18181b;
+  --primary-hover: #27272a;
+  --primary-light: rgba(24, 24, 27, 0.04);
   --danger: #dc2626;
   --danger-hover: #b91c1c;
-  --row-hover: #f8fafc;
+  --row-hover: #f9fafb;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
   --radius: 10px;
@@ -73,7 +73,7 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: var(--primary);
+  background: #18181b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,8 +128,8 @@ body {
   border-radius: 10px;
 }
 .sidebar-item.active .sidebar-badge {
-  color: var(--primary);
-  background: rgba(13, 148, 136, 0.08);
+  color: var(--text);
+  background: rgba(24, 24, 27, 0.06);
 }
 
 /* ── Toolbar ─────────────────────────────────────────────────────────── */
@@ -180,7 +180,7 @@ body {
 .search-input::placeholder { color: var(--text-muted); }
 .search-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.06);
 }
 
 /* ── Card / Table ────────────────────────────────────────────────────── */
@@ -212,7 +212,7 @@ th {
   user-select: none;
 }
 th.sortable { cursor: pointer; }
-th.sortable:hover { color: var(--primary); }
+th.sortable:hover { color: var(--text); }
 th .sort-icon { margin-left: 4px; font-size: 10px; }
 th.align-right { text-align: right; }
 
@@ -281,6 +281,7 @@ tr:hover td {
   font-weight: 500;
   border-radius: 20px;
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 
 /* ── Avatar ──────────────────────────────────────────────────────────── */
@@ -336,11 +337,11 @@ tr:hover td {
 /* ── Links ───────────────────────────────────────────────────────────── */
 
 a.cell-link {
-  color: var(--primary);
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 13px;
 }
-a.cell-link:hover { text-decoration: underline; }
+a.cell-link:hover { color: var(--text); text-decoration: underline; }
 
 .muted { color: var(--text-muted); }
 
@@ -440,7 +441,7 @@ tr:hover .actions-cell { opacity: 1; }
 .add-form-grid input:focus,
 .add-form-grid select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.06);
 }
 
 .add-form-actions {
@@ -487,7 +488,7 @@ tr:hover .actions-cell { opacity: 1; }
 .edit-form-grid input:focus,
 .edit-form-grid select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+  box-shadow: 0 0 0 3px rgba(24, 24, 27, 0.06);
 }
 
 .edit-form-actions {

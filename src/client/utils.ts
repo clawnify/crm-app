@@ -1,14 +1,14 @@
 const PILL_COLORS = [
-  { bg: "#fef2f2", text: "#dc2626" },
-  { bg: "#ecfdf5", text: "#059669" },
-  { bg: "#eff6ff", text: "#2563eb" },
-  { bg: "#fffbeb", text: "#d97706" },
-  { bg: "#f5f3ff", text: "#7c3aed" },
-  { bg: "#f0fdfa", text: "#0d9488" },
-  { bg: "#fdf2f8", text: "#db2777" },
-  { bg: "#fff7ed", text: "#ea580c" },
-  { bg: "#faf5ff", text: "#9333ea" },
-  { bg: "#f0fdf4", text: "#16a34a" },
+  { bg: "#fef2f2", text: "#b91c1c", border: "#fecaca" },
+  { bg: "#ecfdf5", text: "#047857", border: "#a7f3d0" },
+  { bg: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe" },
+  { bg: "#fffbeb", text: "#b45309", border: "#fde68a" },
+  { bg: "#f5f3ff", text: "#6d28d9", border: "#ddd6fe" },
+  { bg: "#f0fdfa", text: "#0f766e", border: "#99f6e4" },
+  { bg: "#fdf2f8", text: "#be185d", border: "#fbcfe8" },
+  { bg: "#fff7ed", text: "#c2410c", border: "#fed7aa" },
+  { bg: "#faf5ff", text: "#7e22ce", border: "#e9d5ff" },
+  { bg: "#f0fdf4", text: "#15803d", border: "#bbf7d0" },
 ];
 
 export function pillColor(value: string) {
@@ -17,7 +17,7 @@ export function pillColor(value: string) {
     hash = ((hash << 5) - hash + value.charCodeAt(i)) | 0;
   }
   const c = PILL_COLORS[Math.abs(hash) % PILL_COLORS.length];
-  return { bg: c.bg, text: c.text };
+  return { bg: c.bg, text: c.text, border: c.border };
 }
 
 const AVATAR_COLORS = [
