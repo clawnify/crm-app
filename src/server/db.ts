@@ -14,15 +14,32 @@ db.pragma("foreign_keys = ON");
 const schema = readFileSync(join(__dirname, "schema.sql"), "utf-8");
 db.exec(schema);
 
-
-export function query<T = Record<string, unknown>>(sql: string, ...params: unknown[]): T[] {
+export async function query<T = Record<string, unknown>>(
+  sql: string,
+  ...params: unknown[]
+): Promise<T[]> {
   return db.prepare(sql).all(...params) as T[];
 }
 
-export function get<T = Record<string, unknown>>(sql: string, ...params: unknown[]): T | undefined {
+export async function get<T = Record<string, unknown>>(
+  sql: string,
+  ...params: unknown[]
+): Promise<T | undefined> {
   return db.prepare(sql).get(...params) as T | undefined;
 }
 
-export function run(sql: string, ...params: unknown[]) {
+export async function run(sql: string, ...params: unknown[]) {
   return db.prepare(sql).run(...params);
+}
+
+export async function transaction<T>(fn: () => Promise<T>): Promise<T> {
+  db.exec("BEGIN");
+  try {
+    const result = await fn();
+    db.exec("COMMIT");
+    return result;
+  } catch (e) {
+    db.exec("ROLLBACK");
+    throw e;
+  }
 }

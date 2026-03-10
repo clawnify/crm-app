@@ -4,17 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n vite,api -c cyan,green \"vite\" \"tsx watch src/server/index.ts\"",
-    "dev:api": "tsx watch src/server/index.ts",
+    "dev": "concurrently -n vite,api -c cyan,green \"vite\" \"tsx watch src/server/dev.ts\"",
+    "dev:api": "tsx watch src/server/dev.ts",
     "dev:client": "vite",
     "build": "vite build",
-    "preview": "vite build && NODE_ENV=production tsx src/server/index.ts",
-    "start": "NODE_ENV=production tsx src/server/index.ts"
+    "preview": "vite build && NODE_ENV=production tsx src/server/dev.ts",
+    "start": "NODE_ENV=production tsx src/server/dev.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.0",
     "better-sqlite3": "^11.0.0",
+    "@hono/zod-openapi": "^0.18.0",
     "hono": "^4.6.0",
+    "zod": "^3.24.0",
     "lucide-preact": "^0.575.0",
     "preact": "^10.25.0"
   },
