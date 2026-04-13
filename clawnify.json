@@ -1,0 +1,46 @@
+{
+  "$schema": "https://app.clawnify.com/schema/v1/clawnify.json",
+  "version": 1,
+  "name": "CRM App",
+  "description": "CRM with companies, contacts, and deals pipeline. Like HubSpot. Best for customer relationship management, sales tracking, contact databases, or deal pipelines.",
+  "icon": "icon.svg",
+  "tags": ["crm", "sales", "contacts", "pipeline"],
+
+  "app": {
+    "framework": "preact+hono",
+    "database": true,
+    "storage": false
+  },
+
+  "deploy": {
+    "title": "Deploy your CRM",
+    "subtitle": "Like HubSpot — customized for your sales process in minutes",
+    "prompts": [
+      {
+        "key": "business_type",
+        "label": "What does your business sell?",
+        "placeholder": "e.g. B2B SaaS, real estate, consulting services",
+        "required": true
+      },
+      {
+        "key": "company_name",
+        "label": "Company name",
+        "placeholder": "e.g. Acme Corp",
+        "required": true
+      },
+      {
+        "key": "pipeline_stages",
+        "label": "What are your deal stages?",
+        "placeholder": "e.g. Lead, Qualified, Proposal, Negotiation, Closed Won, Closed Lost"
+      },
+      {
+        "key": "details",
+        "label": "Any other details?",
+        "type": "textarea",
+        "placeholder": "Custom fields, brand colors, terminology..."
+      }
+    ]
+  },
+
+  "agent": "agent.md"
+}
