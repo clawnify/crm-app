@@ -8,10 +8,9 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port: 5175,
     proxy: {
       "/api": {
-        target: "http://localhost:3003",
+        target: "http://localhost:8787",
         changeOrigin: true,
       },
     },

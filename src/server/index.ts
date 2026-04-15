@@ -1,7 +1,14 @@
 import { OpenAPIHono, createRoute, z } from "@hono/zod-openapi";
-import { query, get, run } from "./db";
+import { initDB, query, get, run } from "./db.js";
 
-const app = new OpenAPIHono();
+type Env = { Bindings: { DB: D1Database } };
+
+const app = new OpenAPIHono<Env>();
+
+app.use("*", async (c, next) => {
+  initDB(c.env.DB);
+  await next();
+});
 
 // ── Shared Schemas ─────────────────────────────────────────────────
 
@@ -156,16 +163,14 @@ app.openapi(listCompanies, async (c) => {
 
     const countResult = await get<{ total: number }>(
       "SELECT COUNT(*) as total FROM companies" + whereSQL,
-      ...params,
+      [...params],
     );
     const total = countResult?.total || 0;
 
     const rows = await query(
       `SELECT c.*, (SELECT COUNT(*) FROM contacts WHERE company_id = c.id) as contact_count
        FROM companies c${whereSQL} ORDER BY c.${sortCol} ${order} LIMIT ? OFFSET ?`,
-      ...params,
-      limit,
-      offset,
+      [...params, limit, offset],
     );
 
     return c.json({ companies: rows, total, page, limit }, 200);
@@ -205,17 +210,12 @@ app.openapi(createCompany, async (c) => {
     const name = body.name.trim();
     if (!name) return c.json({ error: "Name is required" }, 400);
 
-    await run(
+    const result = await run(
       "INSERT INTO companies (name, domain, industry, phone, email, notes) VALUES (?, ?, ?, ?, ?, ?)",
-      name,
-      (body.domain || "").trim(),
-      (body.industry || "").trim(),
-      (body.phone || "").trim(),
-      (body.email || "").trim(),
-      (body.notes || "").trim(),
+      [name, (body.domain || "").trim(), (body.industry || "").trim(), (body.phone || "").trim(), (body.email || "").trim(), (body.notes || "").trim()],
     );
 
-    const inserted = await get("SELECT * FROM companies WHERE rowid = last_insert_rowid()");
+    const inserted = await get("SELECT * FROM companies WHERE id = ?", [result.lastInsertRowid]);
     return c.json({ company: inserted }, 201);
   } catch (err: unknown) {
     return c.json({ error: (err as Error).message }, 500);
@@ -270,10 +270,10 @@ app.openapi(updateCompany, async (c) => {
     fields.push("updated_at = datetime('now')");
     params.push(id);
 
-    const result = await run("UPDATE companies SET " + fields.join(", ") + " WHERE id = ?", ...params);
+    const result = await run("UPDATE companies SET " + fields.join(", ") + " WHERE id = ?", params);
     if (result.changes === 0) return c.json({ error: "Company not found" }, 404);
 
-    const updated = await get("SELECT * FROM companies WHERE id = ?", id);
+    const updated = await get("SELECT * FROM companies WHERE id = ?", [id]);
     return c.json({ company: updated }, 200);
   } catch (err: unknown) {
     return c.json({ error: (err as Error).message }, 500);
@@ -300,7 +300,7 @@ app.openapi(deleteCompany, async (c) => {
     const id = parseInt(idStr, 10);
     if (isNaN(id)) return c.json({ error: "Invalid ID" }, 400);
 
-    const result = await run("DELETE FROM companies WHERE id = ?", id);
+    const result = await run("DELETE FROM companies WHERE id = ?", [id]);
     if (result.changes === 0) return c.json({ error: "Company not found" }, 404);
     return c.json({ ok: true }, 200);
   } catch (err: unknown) {
@@ -370,7 +370,7 @@ app.openapi(listContacts, async (c) => {
 
     const countResult = await get<{ total: number }>(
       "SELECT COUNT(*) as total FROM contacts ct" + whereSQL,
-      ...params,
+      [...params],
     );
     const total = countResult?.total || 0;
 
@@ -383,9 +383,7 @@ app.openapi(listContacts, async (c) => {
        ${whereSQL}
        ORDER BY ${sortPrefix}${sortCol} ${order}
        LIMIT ? OFFSET ?`,
-      ...params,
-      limit,
-      offset,
+      [...params, limit, offset],
     );
 
     return c.json({ contacts: rows, total, page, limit }, 200);
@@ -428,21 +426,16 @@ app.openapi(createContact, async (c) => {
 
     const companyId = body.company_id ? parseInt(String(body.company_id), 10) : null;
 
-    await run(
+    const result = await run(
       "INSERT INTO contacts (first_name, last_name, email, phone, company_id, title, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      firstName,
-      (body.last_name || "").trim(),
-      (body.email || "").trim(),
-      (body.phone || "").trim(),
-      companyId,
-      (body.title || "").trim(),
-      (body.status || "lead").trim(),
+      [firstName, (body.last_name || "").trim(), (body.email || "").trim(), (body.phone || "").trim(), companyId, (body.title || "").trim(), (body.status || "lead").trim()],
     );
 
     const inserted = await get(
       `SELECT ct.*, co.name as company_name, co.domain as company_domain
        FROM contacts ct LEFT JOIN companies co ON ct.company_id = co.id
-       WHERE ct.rowid = last_insert_rowid()`,
+       WHERE ct.id = ?`,
+      [result.lastInsertRowid],
     );
     return c.json({ contact: inserted }, 201);
   } catch (err: unknown) {
@@ -503,14 +496,14 @@ app.openapi(updateContact, async (c) => {
     fields.push("updated_at = datetime('now')");
     params.push(id);
 
-    const result = await run("UPDATE contacts SET " + fields.join(", ") + " WHERE id = ?", ...params);
+    const result = await run("UPDATE contacts SET " + fields.join(", ") + " WHERE id = ?", params);
     if (result.changes === 0) return c.json({ error: "Contact not found" }, 404);
 
     const updated = await get(
       `SELECT ct.*, co.name as company_name, co.domain as company_domain
        FROM contacts ct LEFT JOIN companies co ON ct.company_id = co.id
        WHERE ct.id = ?`,
-      id,
+      [id],
     );
     return c.json({ contact: updated }, 200);
   } catch (err: unknown) {
@@ -538,7 +531,7 @@ app.openapi(deleteContact, async (c) => {
     const id = parseInt(idStr, 10);
     if (isNaN(id)) return c.json({ error: "Invalid ID" }, 400);
 
-    const result = await run("DELETE FROM contacts WHERE id = ?", id);
+    const result = await run("DELETE FROM contacts WHERE id = ?", [id]);
     if (result.changes === 0) return c.json({ error: "Contact not found" }, 404);
     return c.json({ ok: true }, 200);
   } catch (err: unknown) {
@@ -637,14 +630,13 @@ app.openapi(listDeals, async (c) => {
 
     const countResult = await get<{ total: number }>(
       "SELECT COUNT(*) as total FROM deals d" + whereSQL,
-      ...params,
+      [...params],
     );
     const total = countResult?.total || 0;
 
-    const aggParams = [...params];
     const agg = await get<{ total_value: number }>(
       "SELECT COALESCE(SUM(d.value), 0) as total_value FROM deals d" + whereSQL,
-      ...aggParams,
+      [...params],
     );
 
     const rows = await query(
@@ -657,9 +649,7 @@ app.openapi(listDeals, async (c) => {
        ${whereSQL}
        ORDER BY d.${sortCol} ${order}
        LIMIT ? OFFSET ?`,
-      ...params,
-      limit,
-      offset,
+      [...params, limit, offset],
     );
 
     return c.json({ deals: rows, total, page, limit, totalValue: agg?.total_value || 0 }, 200);
@@ -702,14 +692,9 @@ app.openapi(createDeal, async (c) => {
     const contactId = body.contact_id ? parseInt(String(body.contact_id), 10) : null;
     const value = parseFloat(String(body.value)) || 0;
 
-    await run(
+    const result = await run(
       "INSERT INTO deals (name, contact_id, value, stage, close_date, notes) VALUES (?, ?, ?, ?, ?, ?)",
-      name,
-      contactId,
-      value,
-      (body.stage || "prospect").trim(),
-      (body.close_date || "").trim(),
-      (body.notes || "").trim(),
+      [name, contactId, value, (body.stage || "prospect").trim(), (body.close_date || "").trim(), (body.notes || "").trim()],
     );
 
     const inserted = await get(
@@ -718,7 +703,8 @@ app.openapi(createDeal, async (c) => {
        FROM deals d
        LEFT JOIN contacts ct ON d.contact_id = ct.id
        LEFT JOIN companies co ON ct.company_id = co.id
-       WHERE d.rowid = last_insert_rowid()`,
+       WHERE d.id = ?`,
+      [result.lastInsertRowid],
     );
     return c.json({ deal: inserted }, 201);
   } catch (err: unknown) {
@@ -782,7 +768,7 @@ app.openapi(updateDeal, async (c) => {
     fields.push("updated_at = datetime('now')");
     params.push(id);
 
-    const result = await run("UPDATE deals SET " + fields.join(", ") + " WHERE id = ?", ...params);
+    const result = await run("UPDATE deals SET " + fields.join(", ") + " WHERE id = ?", params);
     if (result.changes === 0) return c.json({ error: "Deal not found" }, 404);
 
     const updated = await get(
@@ -792,7 +778,7 @@ app.openapi(updateDeal, async (c) => {
        LEFT JOIN contacts ct ON d.contact_id = ct.id
        LEFT JOIN companies co ON ct.company_id = co.id
        WHERE d.id = ?`,
-      id,
+      [id],
     );
     return c.json({ deal: updated }, 200);
   } catch (err: unknown) {
@@ -820,7 +806,7 @@ app.openapi(deleteDeal, async (c) => {
     const id = parseInt(idStr, 10);
     if (isNaN(id)) return c.json({ error: "Invalid ID" }, 400);
 
-    const result = await run("DELETE FROM deals WHERE id = ?", id);
+    const result = await run("DELETE FROM deals WHERE id = ?", [id]);
     if (result.changes === 0) return c.json({ error: "Deal not found" }, 404);
     return c.json({ ok: true }, 200);
   } catch (err: unknown) {
